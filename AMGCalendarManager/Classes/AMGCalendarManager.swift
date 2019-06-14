@@ -9,7 +9,7 @@ import EventKit
 
 public class AMGCalendarManager{
     public var eventStore = EKEventStore()
-    public var calendarName: String
+    public var calendarName: String?
     
     public var calendar: EKCalendar? {
         get {
@@ -243,10 +243,10 @@ public class AMGCalendarManager{
     
     private func createCalendar(commit: Bool = true, source: EKSource? = nil) -> NSError? {
         let newCalendar = EKCalendar(for: .event, eventStore: self.eventStore)
-        newCalendar.title = self.calendarName
+        newCalendar.title = self.calendarName ?? "Untitled"
         
         // defaultCalendarForNewEvents will always return a writtable source, even when there is no iCloud support.
-        newCalendar.source = source ?? self.eventStore.defaultCalendarForNewEvents.source
+        newCalendar.source = source ?? self.eventStore.defaultCalendarForNewEvents?.source
         do {
             try self.eventStore.saveCalendar(newCalendar, commit: commit)
             return nil
@@ -263,7 +263,7 @@ public class AMGCalendarManager{
                         return nil
                     }
                 }
-                self.calendarName = self.eventStore.defaultCalendarForNewEvents.title
+                self.calendarName = self.eventStore.defaultCalendarForNewEvents?.title
                 return error
             }
         }
